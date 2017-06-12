@@ -1,0 +1,188 @@
+#!/slowfs/us01dwt2p106/char_sw_chute/tools/bin/python3
+# -*- mode: Python;
+
+gVar.flow 		= 'fullchar1'
+gVar.libName 		= 'um28nphhlogl35hsp140f'
+gVar.libVer 		= '1.00A'
+#gVar.vddNom 		= 0.9
+gVar.vt 		= 'HVT35'
+#gVar.footprintPrefix    = 'SST'
+gVar.cvsRoot 		= '/slowfs/us01dwt2p358/proj_lp_um28hpc12t/.cvsroot'
+gVar.cvsExportOptSpx 	= '-r HS_UMC28HPC_LIBS_1P01A'
+gVar.cvsExportOptInfo 	= '-r HS_UMC28HPC_LIBS_1P00A'
+gVar.useCVS 		= True
+gVar.refCorner 		= 'tt0p9v25c'
+gVar.protoCell 		= 'h35_inv_pv20_1'
+gVar.pVerbose 		= '../p_verbose_ulp_h35_cell_list_COT'
+gVar.slewsFile 		= '/slowfs/us01dwt2p494/proj_UMC28HPCP_HS/slewgen/slews.csv'
+gVar.ecFormat = [['.*tt\d.*', 'hpcptt'],
+                 ['.*ffgbc\d.*', 'hpcpcmint'],
+                 ['.*ssgwc\d.*', 'hpcpcmaxt']]
+#gVar.gcellsDir 	= '/slowfs/us01dwt2p106/char_gcells/gcells'
+#custom flags
+
+gVar.fillCellsInLiberty = True
+gVar.hspiceClientServer = False
+gVar.clampedPredriver  = False
+
+################## AOCV settings ##############
+
+#  *************************************************************************make sure of these*******************************************************************
+gVar.aocvLde = 1.0
+gVar.aocvVer = '2.0'
+gVar.aocvNumStages = 85
+
+def PVT (name, process, temp, vdd, loadAlignGroup, maxSlewPVT, loadAlignGroupRef=False, pvtType='base', refPVT=False, aocv=False):
+
+    if process == 'tt':
+        spiceMacro_stat = 'tt_g'
+        spiceMacro_normal = 'tt'
+    elif process == 'ssgwc':
+        spiceMacro_stat = 'ss_g'
+        spiceMacro_normal = spiceMacro_stat
+    elif process == 'sswc':
+        spiceMacro_stat = 'ss_g'
+        spiceMacro_normal = 'ss'
+    elif process == 'ffg':
+        spiceMacro_stat = 'ff_g'
+        spiceMacro_normal = spiceMacro_stat
+    elif process == 'ffgbc':
+        spiceMacro_stat = 'ff_g'
+        spiceMacro_normal = 'ff'
+
+
+    modelPath = '/remote/cad-rep/projects/std/l514-std-umc28hpcp-1.8v/rel1.3.0/cad/shared/lltech/spice/umc28hpcp_usage.l'
+
+    models = [[modelPath, macro] for macro in [spiceMacro_normal]]
+
+    if aocv:
+        aocvModels = [[modelPath, macro] for macro in [spiceMacro_stat]]
+        charMethod = [CM(),CM(aocv=True)]
+    else:
+        aocvModels = None
+        charMethod = [CM()]
+
+
+    nch = ['N_HVT']
+    pch = ['P_HVT']
+    nchShorted = []
+    pchShorted = []
+    dio = []
+
+    gVar.addPVT(name=name,
+                process = process,
+                temp = temp,
+                vdd = vdd,
+#                vddi = vddi,
+                spiceModels = models,
+                aocvSpiceModels = aocvModels,
+                nch=nch,
+                pch=pch,
+                nchShorted=nchShorted,
+                pchShorted=pchShorted,
+                dio=dio,
+                refPVT = refPVT,
+		pvtType = pvtType,
+		maxSlewPVT = maxSlewPVT,
+                loadAlignGroupRef = loadAlignGroupRef,
+		charMethod=charMethod,
+                loadAlignGroup = loadAlignGroup
+                )
+
+
+def PVT_LSH (name, process, temp, vdd, vddi, loadAlignGroup,maxSlewPVT, loadAlignGroupRef=False, pvtType='ret', refPVT=False,  aocv=False):
+
+    if process == 'tt':
+        spiceMacro_stat = 'tt_g'
+        spiceMacro_normal = 'tt'
+    elif process == 'ssgwc':
+        spiceMacro_stat = 'ss_g'
+        spiceMacro_normal = spiceMacro_stat
+    elif process == 'sswc':
+        spiceMacro_stat = 'ss_g'
+        spiceMacro_normal = 'ss'
+    elif process == 'ffg':
+        spiceMacro_stat = 'ff_g'
+        spiceMacro_normal = spiceMacro_stat
+    elif process == 'ffgbc':
+        spiceMacro_stat = 'ff_g'
+        spiceMacro_normal = 'ff'
+
+
+    modelPath = '/remote/cad-rep/projects/std/l514-std-umc28hpcp-1.8v/rel1.3.0/cad/shared/lltech/spice/umc28hpcp_usage.l'
+
+    models = [[modelPath, macro] for macro in [spiceMacro_normal]]
+
+    if aocv:
+        aocvModels = [[modelPath, macro] for macro in [spiceMacro_stat]]
+        charMethod = [CM(),CM(aocv=True)]
+    else:
+        aocvModels = None
+        charMethod = [CM()]
+
+    nch = ['N_HVT']
+    pch = ['P_HVT']
+    nchShorted = []
+    pchShorted = []
+    dio = []
+
+    gVar.addPVT(name=name,
+                process = process,
+                temp = temp,
+                vdd = vdd,
+                vddi = vddi,
+                spiceModels = models,
+                aocvSpiceModels = aocvModels,
+                nch=nch,
+                pch=pch,
+                nchShorted=nchShorted,
+                pchShorted=pchShorted,
+                dio=dio,
+                refPVT = refPVT,
+		pvtType = pvtType,
+		maxSlewPVT = maxSlewPVT,
+                loadAlignGroupRef = loadAlignGroupRef,
+		charMethod=charMethod,
+                loadAlignGroup = loadAlignGroup
+                )
+
+
+### Normal ##
+PVT('tt0p9v25c',    'tt',  25,  0.9,  'tt0p9v25c','ssgwc0p81v125c', True, 'ret', True)
+PVT_LSH('dlvl_tt0p9v25c',    'tt',  25,  0.9,0.9,  'dlvl_tt0p9v25c','ssgwc0p81v125c', True, 'dlvl', True)
+PVT_LSH('dlvl_tt0p9v25c_i1p0v',    'tt',  25,  0.9,1.0,  'dlvl_tt0p9v25c_i1p0v','ssgwc0p81v125c', True, 'dlvl', False)
+PVT('pg_tt0p9v25c',    'tt',  25,  0.9,  'pg_tt0p9v25c','ssgwc0p81v125c', True, 'pg', True)
+PVT_LSH('ulvl_tt0p9v25c',    'tt',  25,  0.9,0.9,  'ulvl_tt0p9v25c','ssgwc0p81v125c', True, 'ulvl', True)
+PVT_LSH('ulvl_tt0p9v25c_i0p7v',    'tt',  25,  0.9,0.7,  'ulvl_tt0p9v25c_i0p7v','ssgwc0p81v125c', True, 'ulvl', False)
+
+
+## AOCV ##
+#ph1
+PVT('ssgwc0p81v125c',    'ssgwc',  125,  0.81,  'ssgwc0p81v125c','ssgwc0p81v125c', True, 'ret', False, True)
+PVT_LSH('dlvl_ssgwc0p81v125c',    'ssgwc',  125,  0.81,0.81,  'dlvl_ssgwc0p81v125c','ssgwc0p81v125c', True, 'dlvl', False, True)
+PVT_LSH('dlvl_ssgwc0p81v125c_i0p9v',    'ssgwc',  125,  0.81,0.9,  'dlvl_ssgwc0p81v125c_i0p9v','ssgwc0p81v125c', True, 'dlvl', False, True)
+PVT('pg_ssgwc0p81v125c',    'ssgwc',  125,  0.81,  'pg_ssgwc0p81v125c','ssgwc0p81v125c', True, 'pg', False, False)
+PVT_LSH('ulvl_ssgwc0p81v125c',    'ssgwc',  125,  0.81, 0.81,  'ulvl_ssgwc0p81v125c','ssgwc0p81v125c', True, 'ulvl', False, True)
+PVT_LSH('ulvl_ssgwc0p81v125c_i0p63v',    'ssgwc',  125,  0.81, 0.63,  'ulvl_ssgwc0p81v125c_i0p63v','ssgwc0p81v125c', True, 'ulvl', False, True)
+
+PVT('ssgwc0p81vn40c',    'ssgwc',  -40,  0.81,  'ssgwc0p81vn40c','ssgwc0p81v125c', True, 'ret', False, True)
+PVT_LSH('dlvl_ssgwc0p81vn40c',    'ssgwc',  -40,  0.81, 0.81,  'dlvl_ssgwc0p81vn40c','ssgwc0p81v125c', True, 'dlvl', False, True)
+PVT_LSH('dlvl_ssgwc0p81vn40c_i0p9v',    'ssgwc',  -40,  0.81,0.9,  'dlvl_ssgwc0p81vn40c_i0p9v','ssgwc0p81v125c', True, 'dlvl', False, True)
+PVT('pg_ssgwc0p81vn40c',    'ssgwc',  -40,  0.81,  'pg_ssgwc0p81vn40c','ssgwc0p81v125c', True, 'pg', False, False)
+PVT_LSH('ulvl_ssgwc0p81vn40c',    'ssgwc',  -40,  0.81, 0.81,  'ulvl_ssgwc0p81vn40c','ssgwc0p81v125c', True, 'ulvl', False, True)
+PVT_LSH('ulvl_ssgwc0p81vn40c_i0p63v',    'ssgwc',  -40,  0.81, 0.63,  'ulvl_ssgwc0p81vn40c_i0p63v','ssgwc0p81v125c', True, 'ulvl', False, True)
+
+PVT('ffgbc0p99v125c',    'ffgbc',  125,  0.99,  'ffgbc0p99v125c','ssgwc0p81v125c', True, 'ret', False, True)
+PVT_LSH('dlvl_ffgbc0p99v125c',    'ffgbc',  125,  0.99, 0.99,  'dlvl_ffgbc0p99v125c','ssgwc0p81v125c', True, 'dlvl', False, True)
+PVT_LSH('dlvl_ffgbc0p99v125c_i1p05v',    'ffgbc',  125,  0.99, 1.05,  'dlvl_ffgbc0p99v1d25c_i1p05v','ffgbc0p99vn40c', True, 'dlvl', False, True)
+PVT('pg_ffgbc0p99v125c',    'ffgbc',  125,  0.99,  'pg_ffgbc0p99v125c','ssgwc0p81v125c', True, 'pg', False, False)
+PVT_LSH('ulvl_ffgbc0p99v125c',    'ffgbc',  125,  0.99, 0.99,  'ulvl_ffgbc0p99v125c','ssgwc0p81v125c', True, 'ulvl', False, True)
+PVT_LSH('ulvl_ffgbc0p99v125c_i0p77v',    'ffgbc',  125,  0.99, 0.77,  'ulvl_ffgbc0p99v125c_i0p77v','ssgwc0p81v125c', True, 'ulvl', False, True)
+
+
+PVT('ffgbc0p99vn40c',    'ffgbc',  -40,  0.99,  'ffgbc0p99vn40c','ssgwc0p81v125c', True, 'ret', False, True)
+PVT_LSH('dlvl_ffgbc0p99vn40c',    'ffgbc',  -40,  0.99, 0.99,  'dlvl_ffgbc0p99vn40c','ssgwc0p81v125c', True, 'dlvl', False, True)
+PVT_LSH('dlvl_ffgbc0p99vn40c_i1p05v',    'ffgbc',  -40,  0.99, 1.05,  'dlvl_ffgbc0p99vn40c_i1p05v','ssgwc0p81v125c', True, 'dlvl', False, True)
+PVT('pg_ffgbc0p99vn40c',    'ffgbc',  -40,  0.99,  'pg_ffgbc0p99vn40c','ssgwc0p81v125c', True, 'pg', False, False)
+PVT_LSH('ulvl_ffgbc0p99vn40c',    'ffgbc',  -40,  0.99, 0.99,  'ulvl_ffgbc0p99vn40c','ssgwc0p81v125c', True, 'ulvl', False, True)
+PVT_LSH('ulvl_ffgbc0p99vn40c_i0p77v',    'ffgbc',  -40,  0.99, 0.77,  'ulvl_ffgbc0p99vn40c_i0p77v','ssgwc0p81v125c', True, 'ulvl', False, True)
